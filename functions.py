@@ -44,6 +44,7 @@ def plot_different_sigmas(img, sigmas, figsize=None):
     plt.tight_layout()
     plt.show()
 
+
 def remove_zeros(img):
     """
     Tar bort rader och kolumner som bara innehåller nollor för att inte det
@@ -54,6 +55,8 @@ def remove_zeros(img):
     rows = np.any(mask, axis=1)
     cols = np.any(mask, axis=0)
     return img[np.ix_(rows, cols)]
+
+
 def splitter(img, number_of_pieces=16):
     """
     Splittrar en bild i "number_of_pieces" lika stora delar
@@ -93,19 +96,45 @@ def plot_splitted_images(pieces, figsize=(10, 10)):
     plt.show()
 
 
-def find_number_galaxies_in_piece(piece, sigma = 6, threshold=0.0005):
+def find_number_galaxies_in_piece(piece, sigma = 6):
     """
     Räkna ut antal galaxer givet ett sigma i 1 del mha label från scipy.ndimage
     """
+    
+    #calculate threshold
+    piece = remove_zeros(piece) #remove nollor
+    threshold = np.mean(piece) + 2*np.std(piece) #
+
+    print(f"Threshold: {threshold}")
+    #print the filtered image
+
     mask = piece > threshold # tröskelvärde för att definiera "ljusa" områden
+    filtered_image = piece.copy()
+    filtered_image[~mask] = 0
+    plt_img(filtered_image)
     # Labela sammanhängande områden
+
     labeled, num_features = label(mask)
     return num_features
+
+
+
+def plot_filtered_image(img):
+    """
+    Plottar bilden med pixlar under threshold filtrerade bort
+    """
+
+    threshold = np.mean(img)
+    mask = img > threshold
+    filtered_img = img.copy()
+    filtered_img[~mask] = 0  # Sätt pixlar under threshold till 0
+    plt_img(filtered_img)  
 
 def plot_final_calculation(pieces, sigma=6, threshold=0.0005, figsize=(10, 10)):
     """
     Plottar alla delar i en grid och skriver ut antalet galaxer i varje ruta under bilden.
     """
+
     n = int(np.sqrt(len(pieces)))
     # Samla alla icke-nollvärden från alla bitar
     all_values = np.concatenate([piece.ravel() for piece in pieces if piece.size > 0 and np.any(piece)])

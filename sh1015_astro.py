@@ -21,6 +21,7 @@ def figure_2():
     """
     Visa hur det blir med stora filen. 
     """
+    
     img = np.load('dat/hxdf_acs_wfc_f850lp.npy')
 
     img = gaussian_filter(img, sigma=6) #filtrera bort brus igen
@@ -56,7 +57,7 @@ def figure_4(number_of_pieces=16, sigma=6):
 
 def final_calculation(number_of_pieces=16, sigma=4, threshold=0.0001):
     """
-    Räkna ut antalet galaxer i hela bilden
+    Räkna ut antalet galaxer i hela bilden OUTDATED
     """
     picture_deg_square = 2.3*2/3600  #antal arcsekunder i hela bilden
     total_deg_square = 4*np.pi
@@ -72,7 +73,7 @@ def final_calculation(number_of_pieces=16, sigma=4, threshold=0.0001):
     for i, piece in enumerate(pieces):
         #Räkna ut antalet ljusa spots i varje piece
 
-        number_of_galaxies_in_piece = find_number_galaxies_in_piece(piece, sigma = sigma, threshold=threshold)
+        number_of_galaxies_in_piece = find_number_galaxies_in_piece(piece, sigma = sigma)
         total_galaxies_in_picture += number_of_galaxies_in_piece
 
     #plot_final_calculation(pieces, sigma=sigma, threshold=threshold, figsize=(number_of_pieces, number_of_pieces))
@@ -80,6 +81,45 @@ def final_calculation(number_of_pieces=16, sigma=4, threshold=0.0001):
 
     total_galaxies = total_galaxies_in_picture * total_deg_square / picture_deg_square
     print(f"Totalt antal galaxer i universum (uppskattat): {total_galaxies:.2e}")
+
+def function_from_lab(sigma = 2):
+    """funktionen jag skrev på labben"""
+    picture_deg_square = 2.3*2/3600  #antal arcsekunder i hela bilden
+    total_deg_square = 4*np.pi
+    #load the image
+    img = np.load('dat/hxdf_acs_wfc_f850lp.npy')
+    #rotate the image 45 degrees
+    img = rotate(img, 45, reshape=True) # rotera bilden 45 grader
+    img = remove_zeros(img) # ta bort nollor runtomkring
+
+
+    #remove the zeros around the image if it is next to alot of other zeros
+    #img = remove_large_zero_chunks_fast(img, min_chunk_size=200)
+    plt_img(img)
+
+    img = gaussian_filter(img, sigma=sigma) #filtrera bort brus igen
+    numb_of_galaxies = find_number_galaxies_in_piece(img, sigma = sigma)
+    
+
+    print(f"Antal galaxer i hela bilden: {numb_of_galaxies}")
+    total_galaxies = numb_of_galaxies * total_deg_square / picture_deg_square
+    print(f"Totalt antal galaxer i universum (uppskattat) i miljoner: {total_galaxies*10**-6:.2f} miljoner")
+
+def plot_why_we_rotate():
+    """Visa varför vi roterar bilden"""
+    img = np.load('dat/hxdf_acs_wfc_f850lp.npy')
+    plt_img(img)
+    rotated_img = rotate(img, 45, reshape=True) # rotera bilden 45 grader
+    plt_img(rotated_img)
+    cropped_img = remove_zeros(rotated_img) # ta bort nollor runtomkring
+    plt_img(cropped_img)
+
+def plot_results():
+    """
+    plot the final results given different sigmas
+    """
+
+    
 if __name__ == "__main__":
     # Load the image
     #figure_1()
@@ -88,7 +128,14 @@ if __name__ == "__main__":
     #figure_4()
 
     #vi vet att det är 5000 galaxier i bilden. med sigma = 4 och number_of_pieces = 16 får vi 5557 galaxier
-    sigma = 4
+    """sigma = 3
     number_of_pieces = 16
     final_calculation(number_of_pieces=number_of_pieces, sigma=sigma, threshold=0.0001)
+    """
+    #function_from_lab()
+    #plot_why_we_rotate()
+
+
+
+
 
