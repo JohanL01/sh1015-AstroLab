@@ -32,4 +32,4 @@ pip -r "requirements.txt"
 
 Now try to run the main file (make sure there is a '(.venv)' text in the terminal ensuring that the virtual enviroment is activated)
 
-python sh1015.py
+python sh1015_astro.py
