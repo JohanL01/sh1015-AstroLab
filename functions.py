@@ -1,7 +1,6 @@
-from cv2 import rotate
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.ndimage import gaussian_filter, label
+from scipy.ndimage import gaussian_filter, label, rotate
 
 
 def analyze_brightness(img,sigma):
@@ -96,22 +95,23 @@ def plot_splitted_images(pieces, figsize=(10, 10)):
     plt.show()
 
 
-def find_number_galaxies_in_piece(piece, sigma = 6):
+def find_number_galaxies_in_piece(piece, sigma = 6, show_plot = True):
     """
     Räkna ut antal galaxer givet ett sigma i 1 del mha label från scipy.ndimage
     """
     
     #calculate threshold
     piece = remove_zeros(piece) #remove nollor
-    threshold = np.mean(piece) + 2*np.std(piece) #
+    threshold = np.mean(piece) 
 
     print(f"Threshold: {threshold}")
-    #print the filtered image
-
+    
     mask = piece > threshold # tröskelvärde för att definiera "ljusa" områden
+    
     filtered_image = piece.copy()
     filtered_image[~mask] = 0
-    plt_img(filtered_image)
+    if show_plot:
+        plt_img(filtered_image)
     # Labela sammanhängande områden
 
     labeled, num_features = label(mask)
